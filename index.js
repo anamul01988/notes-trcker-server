@@ -1,14 +1,14 @@
 // user: anamul
 // Pass: GSctW5esOQXj1KhH
-const express = require("express");
-const app = express();
+const express = require('express')
+const app = express()
 const port = 4000;
-// const cors = require("cors");
+const cors = require("cors");
 
-// app.use(cors());
+app.use(cors());
 app.use(express.json());
 
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const uri =
   "mongodb+srv://anamul:GSctW5esOQXj1KhH@cluster0.p7i47.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
 const client = new MongoClient(uri, {
@@ -23,7 +23,9 @@ async function run() {
     const notesCollection = client.db("notesTaker").collection("notes");
 
     //get api to read all notes
-    app.get("/notes", async (req, res) => {
+    // http://localhost:4000/notes
+
+    app.get("/notes", async(req, res) => {
       const q = req.query;
       console.log(q);
       const cursor = notesCollection.find({});
@@ -32,14 +34,37 @@ async function run() {
     });
 
     //create notesTaker
-    app.post("/note", async (req, res) => {
+
+    // http://localhost:4000/note
+    /* 
+      body{
+           "userName" : "Anamul haque",
+    "textData" : "hellow world 2"
+      }
+     */
+
+    app.post("/note", async(req, res) => {
       const data = req.body;
-      console.log(data);
-    //   const result = await notesCollection.insertOne(data);
-      res.send('hellow');
+      console.log("from post api", data);
+      const result = await notesCollection.insertOne(data); //data k server a pathai dilam
+      res.send(result);
     });
 
     //update notesTaker
+    app.put('/note/:id',(req, res)=>{
+      const id = req.params.id;
+      const data = req.body;
+      console.log("from update api",data)
+      const filter = {_id: ObjectId(id)};
+      const options = {upsert: true};
+      const updateDoc = {
+        $set: {
+         
+        },
+      };
+      // console.log('from put mehtod',id)
+      res.send('put')
+    })
 
     //deteteNote
 
