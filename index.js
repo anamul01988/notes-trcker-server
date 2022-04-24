@@ -51,7 +51,8 @@ async function run() {
     });
 
     //update notesTaker
-    app.put('/note/:id',(req, res)=>{
+    // http://localhost:4000/note/62651b602d34dbdbc1e8433e
+    app.put('/note/:id',async(req, res)=>{
       const id = req.params.id;
       const data = req.body;
       console.log("from update api",data)
@@ -59,14 +60,26 @@ async function run() {
       const options = {upsert: true};
       const updateDoc = {
         $set: {
-         
+          //----- one way
+          // userName : data.userName,
+          // textData : data.textData,
+          //----- another way
+          ...data
         },
       };
+      const result = await notesCollection.updateOne(filter, updateDoc, options);
       // console.log('from put mehtod',id)
-      res.send('put')
+      res.send(result)
     })
 
     //deteteNote
+    // http://localhost:4000/note/62651b602d34dbdbc1e8433e
+    app.delete('/note/:id',async(req, res)=>{
+      const id = req.params.id;
+      const filter = {_id: ObjectId(id)};
+      const result = await notesCollection.deleteOne(filter);
+      res.send(result);
+    })
 
     console.log("connect to db1");
   } finally {
